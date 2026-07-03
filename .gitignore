@@ -1,0 +1,42 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# ---- Virtual environments ----
+.venv/
+venv/
+env/
+
+# ---- Vendored dependency: Catanatron cloned into the repo ----
+# Installed editable via `pip install -e ".\catanatron[gym]"`; not tracked here.
+# If you want it pinned/reproducible across machines (e.g. ELSA), convert it to a
+# git submodule instead of ignoring it.
+/catanatron/
+
+# ---- ML artifacts / data (can get large) ----
+data/
+runs/
+wandb/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.parquet
+
+# ---- Test / tooling caches ----
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---- IDE / OS ----
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
