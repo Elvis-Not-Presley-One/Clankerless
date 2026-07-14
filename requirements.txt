@@ -1,0 +1,8 @@
+# Core: Catanatron (vendored clone) with RL + dev extras, editable
+-e ./catanatron[gym,dev]
+
+# Added as phases need them (see plan.md):
+# torch            — Phase 3+ (install the build matching the machine's CUDA)
+# sb3-contrib      — Phase 3 Step 0 (MaskablePPO)
+# wandb            — experiment tracking
+# cma              — Phase 2 weight tuning (CMA-ES)
