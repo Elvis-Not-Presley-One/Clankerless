@@ -3,36 +3,33 @@ import random
 from collections import Counter
 from typing import Any
 
-import numpy as np
-
 from catanatron import Color, Game
 from src.clankerless.agents import AGENTS
 
-def arena_play(agents, number_of_games = 1000, seed = 0) -> Counter[Any]:
+COLORS = [Color.RED, Color.BLUE, Color.ORANGE, Color.WHITE]
+
+
+def _play_one_game(args) -> str:
+    """Play ONE game, return the winning agent's name (or 'DRAW').
+
+    Runs in a worker process. args are pickled to get here, so we pass agent
+    *names* (strings), NOT agent objects, and rebuild players from AGENTS here.
+    (Factories/lambdas in AGENTS aren't picklable — they must never cross over.)
     """
-    the arena_play function is meant to play as many games as possible using multiprocessing to speed games up
-    since each game takes around ~.13 seconds to play.
+    names, seed = args
+    seating = list(names)
+    random.Random(seed).shuffle(seating)
+    players = [AGENTS[name](COLORS[j]) for j, name in enumerate(seating)]
+    by_color = {COLORS[j]: name for j, name in enumerate(seating)}
+    winner = Game(players, seed=seed).play()
+    return by_color.get(winner, "DRAW")
 
-    :param agents: a list of agents to play through can be a max size of 4 (i.e 4 players)
-    :param number_of_games: the number of games to play; defaults to 1000
-    :param seed: the seed for the games that are going to be played
-    :return: a counter with a list of the amount of games each bot won
 
-            Example Return:
+def arena_play(agents, number_of_games=1000, seed=0, workers=None) -> Counter[Any]:
+    names = [name for name, _ in agents]
+    tasks = [(names, seed + i) for i in range(number_of_games)]
+    chunk = max(1, number_of_games // ((workers or mp.cpu_count()) * 8))
 
-    """
-
-    colors = [Color.RED, Color.BLUE, Color.ORANGE, Color.WHITE]
-    wins = Counter()
-
-    for i in range(number_of_games):
-        seating = agents[:]
-        random.Random(seed + 1).shuffle(seating)
-
-        players = [cls(colors[j]) for j, (_, cls) in enumerate(seating)]
-        by_color = {colors[j]: name for j, (name, _) in enumerate(seating)}
-        winner = Game(players, seed=seed + 1).play()
-        wins[by_color.get(winner, 'DRAW')] += 1
-
-    return wins
-
+    with mp.Pool(processes=workers) as pool:
+        results = pool.map(_play_one_game, tasks, chunksize=chunk)
+    return Counter(results)

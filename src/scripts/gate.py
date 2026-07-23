@@ -14,6 +14,8 @@ def gate(candidate, reference, games=1000):
     :return: 0 if the test passes commits to github, 1 if the test fails does not commit to github,
     """
     counter = arena_play([(candidate, reference), ('ref', reference)], games)
+
+    # TODO fix this bug/test might be getting upperbound not lower bound also no third var so might crash
     _, lo, _ = win_rate_ci(counter['cand'], games)
     passed = lo > 0.50
     print(f'cand {counter["cand"]}/{games} CI-low {lo:.1%}  -> {"PASS" if passed else "FAIL"}')
