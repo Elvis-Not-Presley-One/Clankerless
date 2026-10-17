@@ -5,6 +5,7 @@ from catanatron.players.search import VictoryPointPlayer
 from catanatron.players.value import ValueFunctionPlayer, DEFAULT_WEIGHTS
 from catanatron.players.weighted_random import WeightedRandomPlayer
 from src.clankerless.agents.heuristic import HeuristicPlayer, MY_WEIGHTS
+from src.clankerless.rl.policy_player import PolicyPlayer
 
 AGENTS = {
     'random' : RandomPlayer,
@@ -17,6 +18,7 @@ AGENTS = {
     # i.e. I spent time to get the best weights possible, this so to find a model to run against
     'FW' : lambda color : ValueFunctionPlayer(color, value_fn_builder_name='C', params=MY_WEIGHTS),
     'VP' : VictoryPointPlayer,
-    'H' : HeuristicPlayer
+    'H' : HeuristicPlayer,
+    'PP' : PolicyPlayer
 }
 
